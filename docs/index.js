@@ -4,6 +4,8 @@ class App {
     this.installedVersion = null;
     this.token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     this.output = document.getElementById('result');
+    this.listen();
+    this.run();
   }
 
   listen() {
@@ -19,6 +21,8 @@ class App {
     if (this.installedVersion) {
       this.output.innerHTML = this.installedVersion;
       this.sendMessage('SEND_CONTROL', { token: this.token });
+    } else {
+      this.output.innerHTML = 'NO EXTENSION IS INSTALLED';
     }
   }
 
@@ -48,4 +52,5 @@ class App {
   }
 }
 
-new App();
+
+const pageApp = new App();
