@@ -1,6 +1,6 @@
 {
-    "manifest_version": 3,
-    "name": "Installation check detection V3",
+    "manifest_version": 2,
+    "name": "Installation check detection",
     "version": "1.0",
     "icons": {
         "48": "icons/message-48.png"
@@ -14,6 +14,9 @@
     ],
     "permissions": ["storage", "tabs"],
     "background": {
-        "service_worker": "service-worker.js"
+        "persistent": true,
+        "scripts": [
+            "background.js"
+        ]
     }
 }

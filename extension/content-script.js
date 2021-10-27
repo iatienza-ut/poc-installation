@@ -53,6 +53,12 @@ class Extension {
       case 'SEND_CONTROL':
         this.redirectExtensionUrl(data);
         break;
+      case 'UNINSTALL':
+        chrome.runtime.sendMessage({ command }, (response) => {
+          this.sendMessageToWebsite({ command: 'EXTENSION_UNINSTALLED' });
+          console.log(response);
+        });
+        break;
       default:
     }
   }
