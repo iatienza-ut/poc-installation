@@ -4,6 +4,8 @@ class App {
     this.installedVersion = null;
     this.token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     this.output = document.getElementById('result');
+    this.uninstallBtn = document.getElementById('uninstall');
+    this.sendControlBtn = document.getElementById('send-controll');
     this.listen();
     this.run();
   }
@@ -14,13 +16,14 @@ class App {
         this.extensionHandler(event.data);
       }
     });
+    this.uninstallBtn.addEventListener("click", () => this.sendMessage('UNINSTALL') );
+    this.sendControlBtn.addEventListener("click", () => this.sendMessage('SEND_CONTROL', { token: this.token }) );
   }
 
   async run() {
     await this.askForInstalledVersion();
     if (this.installedVersion) {
       this.output.innerHTML = this.installedVersion;
-      this.sendMessage('SEND_CONTROL', { token: this.token });
     } else {
       this.output.innerHTML = 'NO EXTENSION IS INSTALLED';
     }
