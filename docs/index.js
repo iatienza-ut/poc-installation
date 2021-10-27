@@ -16,8 +16,8 @@ class App {
         this.extensionHandler(event.data);
       }
     });
-    this.uninstallBtn.addEventListener("click", () => this.sendMessage('UNINSTALL') );
-    this.sendControlBtn.addEventListener("click", () => this.sendMessage('SEND_CONTROL', { token: this.token }) );
+    this.uninstallBtn.addEventListener("click", () => this.sendMessage('UNINSTALL'));
+    this.sendControlBtn.addEventListener("click", () => this.sendMessage('SEND_CONTROL', { token: this.token }));
   }
 
   async run() {
@@ -42,7 +42,12 @@ class App {
       case 'RESPONSE_VERSION':
         this.installedVersion = data.version;
         break;
+      case 'EXTENSION_UNINSTALLED':
+        console.log(message);
+        this.output.innerHTML = 'EXTENSION UNINSTALLED SUCCESFUYLLY!!!!';
+        break;
       default:
+        console.log('>>>>>>>>>>>>>>>>>>>>>', message);
         return;
     }
   }
