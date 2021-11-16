@@ -7,7 +7,7 @@
     },
     "content_scripts": [
         {
-            "matches": ["https://iatienza-uz.github.io/poc-installation/*"],
+            "matches": ["<all_urls>"],
             "js": ["content-script.js"],
             "run_at": "document_start"
         }
@@ -15,5 +15,8 @@
     "permissions": ["storage", "tabs"],
     "background": {
         "service_worker": "service-worker.js"
-    }
+    },
+    "host_permissions": [
+        "<all_urls>"
+    ]
 }
