@@ -1,4 +1,5 @@
 const extensionAPI = chrome ? chrome: browser;
+const browser = chrome ? 'Chrome' : 'Firefox';
 
 class Extension {
   constructor() {
@@ -6,7 +7,7 @@ class Extension {
     const { name, version } = extensionAPI.runtime.getManifest();
     this.version = version;
     this.name = name;
-    this.browser = browser ? 'Firefox' : 'Chrome';
+    this.browser = browser;
     this.host = extensionAPI.runtime.getURL('');
   }
 
@@ -19,11 +20,11 @@ class Extension {
       const { type:command, detail:data } = ev;
       this.websiteMessageHandler({ command, data });
     });
-    window.addEventListener('uninstallExtesion', (ev) => {
+    window.addEventListener('uninstallExtension', (ev) => {
       const { type:command, detail:data } = ev;
       this.websiteMessageHandler({ command, data });
     });
-    window.addEventListener('redirectToExtesion', (ev) => {
+    window.addEventListener('redirectToExtension', (ev) => {
       const { type:command, detail:data } = ev;
       this.websiteMessageHandler({ command, data });
     });
@@ -39,7 +40,7 @@ class Extension {
           browser: this.browser,
         })
         break;
-      case 'redirectToExtesion':
+      case 'redirectToExtension':
         this.redirectExtensionUrl(data);
         break;
       case 'uninstallExtension':

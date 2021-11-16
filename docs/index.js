@@ -12,7 +12,7 @@ class App {
 
   listen() {
     this.uninstallBtn.addEventListener("click", () => this.sendEvent('uninstallExtension'));
-    this.sendControlBtn.addEventListener("click", () => this.sendEvent('redirectToExtesion', { token: this.token }));
+    this.sendControlBtn.addEventListener("click", () => this.sendEvent('redirectToExtension', { token: this.token }));
     window.addEventListener('extensionVersionResponse', (ev) => {
       const { type:command, detail:data } = ev;
       this.extensionHandler({ command, data });
