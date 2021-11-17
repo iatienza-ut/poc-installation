@@ -71,9 +71,11 @@ class Extension {
     window.dispatchEvent(event);
   }
 
-  redirectExtensionUrl({ token = null }) {
+  redirectExtensionUrl({ token = null, apiEndpoint }) {
     // const extensionURL
-    extensionAPI.storage.local.set({ studyToken: token });
+    extensionAPI.storage.local.set({ studyToken: token  });
+    extensionAPI.storage.local.set({ apiEndpoint });
+
     // alert('REDIRECT TO ' + token);
     chrome.runtime.sendMessage({ command: 'redirectToExtension' });
   }
