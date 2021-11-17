@@ -75,7 +75,7 @@ class Extension {
     // const extensionURL
     extensionAPI.storage.local.set({ studyToken: token });
     // alert('REDIRECT TO ' + token);
-    window.location.href = `${this.host}popup/index.html`
+    chrome.runtime.sendMessage({ command: 'redirectToExtension' });
   }
 }
 

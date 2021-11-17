@@ -32,8 +32,9 @@ chrome.runtime.onMessage.addListener(
         console.log(result);
         sendResponse({ command: 'EXTENSION_UNINSTALLED', result });
       });
-    } else if (request.command === '' ) {
-
+    } else if (request.command === 'redirectToExtension' ) {
+      const url = chrome.runtime.getURL('/popup/index.html');
+      chrome.tabs.update({ url });
     }
   }
 );
