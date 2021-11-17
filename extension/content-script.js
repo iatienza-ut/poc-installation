@@ -40,6 +40,14 @@ class Extension {
           browser: this.browser,
         })
         break;
+      case 'updateExtension':
+          this.sendEvent('extensionUpdated', {
+            version: this.version,
+            name: this.name,
+            browser: this.browser,
+            errorType: data.errorType
+          })
+          break;
       case 'redirectToExtension':
         this.redirectExtensionUrl(data);
         break;
