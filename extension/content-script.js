@@ -1,77 +1,83 @@
-/*
-Listen for messages from the page.
-If the message was from the page script, show an alert.
-*/
-// window.addEventListener("message", (event) => {
-//   if (event.source == window &&
-//     event.data &&
-//     event.data.direction == "from-page-script") {
-//     alert("Content script received message: \"" + event.data.message + "\"");
-//   }
-// });
-//
-// /*
-// Send a message to the page script.
-// */
-// function messagePageScript() {
-//   window.postMessage({
-//     direction: "from-content-script",
-//     message: "Message from the content script"
-//   }, "https://mdn.github.io");
-// }
-//
-// /*
-// Add messagePageScript() as a listener to click events on
-// the "from-content-script" element.
-// */
-// var fromContentScript = document.getElementById("from-content-script");
-// fromContentScript.addEventListener("click", messagePageScript);
-
 const extensionAPI = chrome ? chrome: browser;
+const browser = chrome ? 'Chrome' : 'Firefox';
 
 class Extension {
   constructor() {
     this.listen();
-    this.version = extensionAPI.runtime.getManifest().version;
+    const { name, version } = extensionAPI.runtime.getManifest();
+    this.version = version;
+    this.name = name;
+    this.browser = browser;
     this.host = extensionAPI.runtime.getURL('');
   }
 
   listen() {
-    window.addEventListener("message", (event) => {
-      if (event.source == window && event.data && event.data.command) {
-        this.websiteMessageHandler(event.data);
-      }
+    window.addEventListener('checkExtensionVersion', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.websiteMessageHandler({ command, data });
+    });
+    window.addEventListener('updateExtension', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.websiteMessageHandler({ command, data });
+    });
+    window.addEventListener('uninstallExtension', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.websiteMessageHandler({ command, data });
+    });
+    window.addEventListener('redirectToExtension', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.websiteMessageHandler({ command, data });
     });
   }
 
   websiteMessageHandler(message) {
     const { command, data } = message;
     switch (command) {
-      case 'ASK_VERSION':
-        this.sendMessageToWebsite({ command: 'RESPONSE_VERSION', data: { version: this.version } });
+      case 'checkExtensionVersion':
+        this.sendEvent('extensionVersionResponse', {
+          version: this.version,
+          name: this.name,
+          browser: this.browser,
+        })
         break;
-      case 'SEND_CONTROL':
+      case 'updateExtension':
+          this.sendEvent('extensionUpdated', {
+            version: this.version,
+            name: this.name,
+            browser: this.browser,
+            errorType: data.errorType
+          })
+          break;
+      case 'redirectToExtension':
         this.redirectExtensionUrl(data);
         break;
-      case 'UNINSTALL':
+      case 'uninstallExtension':
         chrome.runtime.sendMessage({ command }, (response) => {
-          this.sendMessageToWebsite({ command: 'EXTENSION_UNINSTALLED' });
-          console.log(response);
+          this.sendEvent('extensionUninstalled', {
+            version: this.version,
+            name: this.name,
+            browser: this.browser,
+          });
         });
         break;
       default:
     }
   }
 
-  sendMessageToWebsite(message, origin = '*') {
-    window.postMessage(message, origin);
+  sendEvent (name, detail = {}) {
+    const event = new CustomEvent(name, {
+      detail,
+    });
+    window.dispatchEvent(event);
   }
 
-  redirectExtensionUrl({ token = null }) {
+  redirectExtensionUrl({ token = null, apiEndpoint }) {
     // const extensionURL
-    extensionAPI.storage.local.set({ studyToken: token });
+    extensionAPI.storage.local.set({ studyToken: token  });
+    extensionAPI.storage.local.set({ apiEndpoint });
+
     // alert('REDIRECT TO ' + token);
-    window.location.href = `${this.host}popup/index.html`
+    chrome.runtime.sendMessage({ command: 'redirectToExtension' });
   }
 }
 

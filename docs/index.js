@@ -11,26 +11,33 @@ class App {
   }
 
   listen() {
-    window.addEventListener("message", (event) => {
-      if (event.source == window && event.data && event.data.command) {
-        this.extensionHandler(event.data);
-      }
+    this.uninstallBtn.addEventListener("click", () => this.sendEvent('uninstallExtension'));
+    this.sendControlBtn.addEventListener("click", () => this.sendEvent('redirectToExtension', { token: this.token }));
+    window.addEventListener('extensionVersionResponse', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.extensionHandler({ command, data });
     });
-    this.uninstallBtn.addEventListener("click", () => this.sendMessage('UNINSTALL'));
-    this.sendControlBtn.addEventListener("click", () => this.sendMessage('SEND_CONTROL', { token: this.token }));
+    window.addEventListener('extensionUninstalled', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.extensionHandler({ command, data });
+    });
+    window.addEventListener('extensionUpdated', (ev) => {
+      const { type:command, detail:data } = ev;
+      this.extensionHandler({ command, data });
+    });
   }
 
   async run() {
     await this.askForInstalledVersion();
     if (this.installedVersion) {
-      this.output.innerHTML = this.installedVersion;
+      this.output.innerHTML = this.installedVersion + ' ' + this.installedName + ' ' + this.extensionBrowser;
     } else {
       this.output.innerHTML = 'NO EXTENSION IS INSTALLED';
     }
   }
 
   async askForInstalledVersion() {
-    this.sendMessage('ASK_VERSION');
+    this.sendEvent('checkExtensionVersion');
     return new Promise((resolve) => {
       setTimeout(() => resolve(), 1000);
     });
@@ -39,12 +46,18 @@ class App {
   extensionHandler(message) {
     const { command, data } = message;
     switch (command) {
-      case 'RESPONSE_VERSION':
+      case 'extensionVersionResponse':
         this.installedVersion = data.version;
+        this.installedName = data.name;
+        this.extensionBrowser = data.browser;
         break;
-      case 'EXTENSION_UNINSTALLED':
+      case 'extensionUninstalled':
         console.log(message);
         this.output.innerHTML = 'EXTENSION UNINSTALLED SUCCESFUYLLY!!!!';
+        break;
+      case 'extensionUpdated':
+        console.log(message);
+        this.output.innerHTML = 'EXTENSION UPDATED SUCCESFUYLLY!!!!';
         break;
       default:
         console.log('>>>>>>>>>>>>>>>>>>>>>', message);
@@ -52,11 +65,11 @@ class App {
     }
   }
 
-  sendMessage(command, data = {}) {
-    window.postMessage({
-      command,
-      data
-    }, "*");
+  sendEvent (name, detail = {}) {
+    const event = new CustomEvent(name, {
+      detail,
+    });
+    window.dispatchEvent(event);
   }
 }
 
