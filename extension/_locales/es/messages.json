@@ -1,0 +1,21 @@
+{
+  "extension_title": {
+    "message": "POC de instalación"
+  },
+  "popup_title": {
+    "message": "El titulo de la pagina popup"
+  },
+  "popup_token_description": {
+    "message": "El token del estudio de $enterprise$ es: $token$",
+    "description": "Where the token of the study will be shown",
+    "placeholders": {
+      "enterprise": {
+        "content": "Userzoom"
+      },
+      "token": {
+        "content": "$1",
+        "example": "XD34343ASD"
+      }
+    }
+  }
+}

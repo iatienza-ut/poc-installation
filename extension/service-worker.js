@@ -38,3 +38,9 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
+
+chrome.action.onClicked.addListener(() => {
+  chrome.tabs.create({
+    url: 'https://iatienza-uz.github.io/poc-installation',
+  });
+});
